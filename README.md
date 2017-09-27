@@ -3,8 +3,8 @@
 This repository contains a number of files addressing the challenges of integrating and evaluating the integration of the Zendesk chat, talk and mobile sdks. This includes:
 
   - A single page Android application which contains actual integration code
-  - A series of videos introducing the concept context, showing how the integrations work, storyboarding an imagined finished product and commenting on use case analysis  (TBD).
-  - A slide deck addressing the goals of the design challenge and the underlying assumptions  (TBD).
+  - A series of videos introducing the concept context, showing how the integrations work, storyboarding an imagined finished product and commenting on use case analysis .
+  - A slide deck addressing the goals of the design challenge and the underlying assumptions .
 
 # Application Features
 
@@ -19,9 +19,9 @@ This repository contains a number of files addressing the challenges of integrat
 Product Concept video - this sets the business context for the test. This was invaluable as provides a meaningful way to assess success and provide a target scope.
 Basic Integration - this goes through how the integration works and provides a useful proof of concept for the provided business case.
 Storyboarding - this provides a view into how the finished product would work given time and scope.
-Metrics for Success - this shows how we can use Zendesk tools to evaluate customer success in the business context. (TBD)
-Assessment - this addresses the individual points of the design exercise and evaluates the experience of the integration. (TBD)
-Assessment Slide Deck - (see above) (TBD)
+Metrics for Success - this shows how we can use Zendesk tools to evaluate customer success in the business context. 
+Assessment - this addresses the individual points of the design exercise and evaluates the experience of the integration. 
+Assessment Slide Deck - (see above) 
     
 ### Notes
 
