@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Bikeguard</string>
+    <string name="action_settings">Settings</string>
+    <string name="com.zendesk.sdk.url" translatable="false">https://test-ac35.zendesk.com</string>
+    <string name="com.zendesk.sdk.identifier" translatable="false">35bd0d41c4f938974bbbe97dba4140fa4b5e44fde7a6cba4</string>
+    <string name="com.zendesk.sdk.clientIdentifier" translatable="false">mobile_sdk_client_2084203b65314d636beb</string>
+    <string name="chat_button">Chat</string>
+    <string name="launch_help_center">Launch Help Center</string>
+    <string name="help_center">Help Center</string>
+    <string name="report_a_theft">Report A Theft</string>
+    <string name="show_current_status">Show Current Status</string>
+    <string name="button">Report a Theft</string>
+</resources>
