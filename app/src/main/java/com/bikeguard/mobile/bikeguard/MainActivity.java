@@ -4,6 +4,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,15 +19,22 @@ import android.widget.Button;
 
 import com.zendesk.logger.Logger;
 import com.zendesk.sdk.model.access.AnonymousIdentity;
+import com.zendesk.sdk.model.request.CreateRequest;
+import com.zendesk.sdk.network.RequestProvider;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.sdk.feedback.ui.ContactZendeskActivity;
 import com.zendesk.sdk.support.ContactUsButtonVisibility;
 import com.zendesk.sdk.support.SupportActivity;
 import com.zendesk.sdk.requests.RequestActivity;
 
+import com.zendesk.service.ErrorResponse;
+import com.zendesk.service.ZendeskCallback;
 import com.zopim.android.sdk.api.ZopimChat;
 import com.zopim.android.sdk.prechat.ZopimChatActivity;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,21 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         ZopimChat.init("tBHcpfcP5vOr2XVkANbBjDPWOIcNlUYw");
 
-       /*
-        Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:+353768888870"));
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        startActivity(callIntent);
-        */
 
         Button mChatButton;
         mChatButton = (Button) findViewById(R.id.chat_button);
@@ -88,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
                     return;
                 }
+
+                createTicketOnCallInitiated();
+
                 startActivity(callIntent);
             }
         });
@@ -179,6 +175,49 @@ public class MainActivity extends AppCompatActivity {
 
         }
         return null;
+    }
+
+    private void createTicketOnCallInitiated(){
+        final String currentTime = Calendar.getInstance().getTime().toString();
+
+        CreateRequest createRequest = new CreateRequest();
+
+        createRequest.setSubject("User support call");
+        createRequest.setDescription("User has initiated a theft conversation with us. High Priority.");
+
+
+        HashMap<String, String> metadata = new HashMap<String, String>() {{
+            put("ContactTime", currentTime);
+
+        }};
+
+
+        try {
+            final PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            metadata.put("AndroidVersion", pInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        createRequest.setMetadata(metadata);
+
+        RequestProvider requestProvider = ZendeskConfig.INSTANCE.provider().requestProvider();
+
+        requestProvider.createRequest(createRequest, new ZendeskCallback<CreateRequest>() {
+            @Override
+            public void onSuccess(CreateRequest createRequest) {
+                Logger.i(TAG, "Request created...");
+            }
+
+            @Override
+            public void onError(ErrorResponse errorResponse) {
+                Logger.e(TAG, errorResponse);
+            }
+        });
+
     }
 
 }
