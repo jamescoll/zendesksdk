@@ -1,6 +1,8 @@
 package com.bikeguard.mobile.bikeguard;
 
 import android.Manifest;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,9 +26,14 @@ import com.zendesk.sdk.requests.RequestActivity;
 import com.zopim.android.sdk.api.ZopimChat;
 import com.zopim.android.sdk.prechat.ZopimChatActivity;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,14 +140,41 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.com_zendesk_sdk_identifier),
                 getString(R.string.com_zendesk_sdk_clientIdentifier));
 
+        //Some logic which will autofill the Google email of the user if known
+        String email = getGoogleEmail();
+
+        if(email == null){
+            email = "unknown";
+        }
+
+
 
         // Authenticate anonymously as a Zendesk Support user
         ZendeskConfig.INSTANCE.setIdentity(
                 new AnonymousIdentity.Builder()
-                        .withNameIdentifier("John Bob")
-                        .withEmailIdentifier("johnbob@example.com")
+                        .withNameIdentifier("Zen Desk user")
+                        .withEmailIdentifier(email)
                         .build()
         );
+    }
+
+    public String getGoogleEmail() {
+        AccountManager manager = AccountManager.get(this);
+        Account[] accounts = manager.getAccountsByType("com.google");
+        List<String> possibleEmails = new LinkedList<String>();
+
+        for (Account account : accounts) {
+            // TODO: Check possibleEmail against an email regex or treat
+            // account.name as an email address only for certain account.type values.
+            possibleEmails.add(account.name);
+        }
+
+        if (!possibleEmails.isEmpty() && possibleEmails.get(0) != null) {
+            return possibleEmails.get(0);
+
+
+        }
+        return null;
     }
 
 }
