@@ -3,6 +3,7 @@ package com.bikeguard.mobile.bikeguard;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,10 +12,11 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
 import com.zendesk.logger.Logger;
@@ -22,18 +24,16 @@ import com.zendesk.sdk.model.access.AnonymousIdentity;
 import com.zendesk.sdk.model.request.CreateRequest;
 import com.zendesk.sdk.network.RequestProvider;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
-import com.zendesk.sdk.feedback.ui.ContactZendeskActivity;
+import com.zendesk.sdk.requests.RequestActivity;
 import com.zendesk.sdk.support.ContactUsButtonVisibility;
 import com.zendesk.sdk.support.SupportActivity;
-import com.zendesk.sdk.requests.RequestActivity;
-
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
 import com.zopim.android.sdk.api.ZopimChat;
+import com.zopim.android.sdk.model.VisitorInfo;
 import com.zopim.android.sdk.prechat.ZopimChatActivity;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +64,24 @@ public class MainActivity extends AppCompatActivity {
         mChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String email = getGoogleEmail();
+
+                if (email == null) {
+                    email = "unknown";
+                }
+
+
                 // start chat
+                VisitorInfo visitorInfo = new VisitorInfo.Builder()
+                        .name("User name")
+                        .email(email)
+                        .phoneNumber("Number")
+                        .build();
+                // set visitor info
+                ZopimChat.setVisitorInfo(visitorInfo);
+
+
                 startActivity(new Intent(getApplicationContext(), ZopimChatActivity.class));
             }
         });
@@ -143,10 +160,9 @@ public class MainActivity extends AppCompatActivity {
         //Some logic which will autofill the Google email of the user if known
         String email = getGoogleEmail();
 
-        if(email == null){
+        if (email == null) {
             email = "unknown";
         }
-
 
 
         // Authenticate anonymously as a Zendesk Support user
@@ -158,14 +174,16 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    public String getGoogleEmail() {
+    
+
+    private String getGoogleEmail() {
         AccountManager manager = AccountManager.get(this);
         Account[] accounts = manager.getAccountsByType("com.google");
         List<String> possibleEmails = new LinkedList<String>();
 
         for (Account account : accounts) {
-            // TODO: Check possibleEmail against an email regex or treat
-            // account.name as an email address only for certain account.type values.
+
+
             possibleEmails.add(account.name);
         }
 
@@ -177,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    private void createTicketOnCallInitiated(){
+    private void createTicketOnCallInitiated() {
         final String currentTime = Calendar.getInstance().getTime().toString();
 
         CreateRequest createRequest = new CreateRequest();
@@ -198,8 +216,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
-
 
 
         createRequest.setMetadata(metadata);
