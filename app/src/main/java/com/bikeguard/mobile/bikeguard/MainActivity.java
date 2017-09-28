@@ -20,6 +20,7 @@ import com.zendesk.logger.Logger;
 import com.zendesk.sdk.model.access.AnonymousIdentity;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.sdk.feedback.ui.ContactZendeskActivity;
+import com.zendesk.sdk.support.ContactUsButtonVisibility;
 import com.zendesk.sdk.support.SupportActivity;
 import com.zendesk.sdk.requests.RequestActivity;
 
@@ -95,7 +96,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start SupportActivity to browse Help Center and create/update requests
-                new SupportActivity.Builder().show(MainActivity.this);
+                new SupportActivity.Builder()
+                        .withArticleVoting(false)
+                        .withContactUsButtonVisibility(ContactUsButtonVisibility.OFF)
+                        .show(MainActivity.this);
             }
         });
 
