@@ -3,7 +3,6 @@ package com.bikeguard.mobile.bikeguard;
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,8 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,21 +40,80 @@ import io.fabric.sdk.android.Fabric;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final String SUPPORT_NUMBER = "tel:+353768888870";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initialiseView();
+
+        initializeChatButton();
+
+        initializeCallButton();
+
+        initializeHelpCentreButton();
+
+        initializeShowRequestsButton();
+
+    }
+
+    private void initialiseView() {
+
         Fabric.with(this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Logger.setLoggable(BuildConfig.DEBUG);
+
         initializeZendesk();
 
         ZopimChat.init("tBHcpfcP5vOr2XVkANbBjDPWOIcNlUYw");
+    }
 
 
+    private void initializeShowRequestsButton() {
+        findViewById(R.id.show_open_requests_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RequestActivity.startActivity(MainActivity.this, null);
+            }
+        });
+    }
+
+    private void initializeHelpCentreButton() {
+        findViewById(R.id.launch_help_center_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new SupportActivity.Builder()
+                        .withArticleVoting(false)
+                        .withContactUsButtonVisibility(ContactUsButtonVisibility.OFF)
+                        .show(MainActivity.this);
+            }
+        });
+    }
+
+    private void initializeCallButton() {
+        findViewById(R.id.call_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse(SUPPORT_NUMBER));
+
+                if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE)) {
+                    return;
+                }
+
+                createTicketOnCallInitiated();
+                startActivity(callIntent);
+            }
+        });
+    }
+
+    private void initializeChatButton() {
         Button mChatButton;
         mChatButton = (Button) findViewById(R.id.chat_button);
 
@@ -71,60 +127,20 @@ public class MainActivity extends AppCompatActivity {
                     email = "unknown";
                 }
 
-
-                // start chat
+                // add some visitor info
                 VisitorInfo visitorInfo = new VisitorInfo.Builder()
                         .name("User name")
                         .email(email)
                         .phoneNumber("Number")
                         .build();
+
                 // set visitor info
                 ZopimChat.setVisitorInfo(visitorInfo);
 
-
+                //initiate the chat activity
                 startActivity(new Intent(getApplicationContext(), ZopimChatActivity.class));
             }
         });
-
-        findViewById(R.id.call_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start SupportActivity to browse Help Center and create/update requests
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:+353768888870"));
-
-
-                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-
-                    return;
-                }
-
-                createTicketOnCallInitiated();
-
-                startActivity(callIntent);
-            }
-        });
-
-        findViewById(R.id.launch_help_center_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start SupportActivity to browse Help Center and create/update requests
-                new SupportActivity.Builder()
-                        .withArticleVoting(false)
-                        .withContactUsButtonVisibility(ContactUsButtonVisibility.OFF)
-                        .show(MainActivity.this);
-            }
-        });
-
-
-        // Start RequestActivity to show existing requests
-        findViewById(R.id.show_open_requests_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RequestActivity.startActivity(MainActivity.this, null);
-            }
-        });
-
     }
 
     @Override
@@ -164,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
             email = "unknown";
         }
 
-
         // Authenticate anonymously as a Zendesk Support user
         ZendeskConfig.INSTANCE.setIdentity(
                 new AnonymousIdentity.Builder()
@@ -174,51 +189,36 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    
+
 
     private String getGoogleEmail() {
+        //this is somewhat hacky as we have no guarantee the user has a google account
+        //but it demonstrates some use of the SDKs
         AccountManager manager = AccountManager.get(this);
         Account[] accounts = manager.getAccountsByType("com.google");
-        List<String> possibleEmails = new LinkedList<String>();
+        List<String> possibleEmails = new LinkedList<>();
 
         for (Account account : accounts) {
-
-
             possibleEmails.add(account.name);
         }
 
         if (!possibleEmails.isEmpty() && possibleEmails.get(0) != null) {
             return possibleEmails.get(0);
-
-
         }
         return null;
     }
 
     private void createTicketOnCallInitiated() {
-        final String currentTime = Calendar.getInstance().getTime().toString();
+        //this logic creates a support ticket the moment a call is made to us
+        //especially useful if the user is using a device which has no telephony
 
         CreateRequest createRequest = new CreateRequest();
 
         createRequest.setSubject("User support call");
         createRequest.setDescription("User has initiated a theft conversation with us. High Priority.");
 
-
-        HashMap<String, String> metadata = new HashMap<String, String>() {{
-            put("ContactTime", currentTime);
-
-        }};
-
-
-        try {
-            final PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
-            metadata.put("AndroidVersion", pInfo.versionName);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-
-        createRequest.setMetadata(metadata);
+        //add the current time and android version as examples of metadata
+        addRequestMetadata(createRequest);
 
         RequestProvider requestProvider = ZendeskConfig.INSTANCE.provider().requestProvider();
 
@@ -234,6 +234,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void addRequestMetadata(CreateRequest createRequest) {
+
+        final String currentTime = Calendar.getInstance().getTime().toString();
+
+        HashMap<String, String> metadata = new HashMap<String, String>() {{
+            put("ContactTime", currentTime);
+
+        }};
+
+        try {
+            final PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            metadata.put("AndroidVersion", pInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        createRequest.setMetadata(metadata);
     }
 
 }
