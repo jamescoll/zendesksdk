@@ -17,21 +17,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/launch_help_center"
-        android:layout_marginBottom="23dp"
-        android:layout_above="@+id/create_request_button"
-        android:layout_alignLeft="@+id/create_request_button"
-        android:layout_alignStart="@+id/create_request_button"
-        android:layout_alignRight="@+id/create_request_button"
-        android:layout_alignEnd="@+id/create_request_button" />
-
-    <Button
-        android:id="@+id/create_request_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginBottom="177dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="32dp"
-        android:text="@string/report_a_theft" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:id="@+id/show_open_requests_button"

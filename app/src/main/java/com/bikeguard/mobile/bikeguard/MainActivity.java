@@ -91,13 +91,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Start ContactZendeskActivity for a standalone way to create requests
-        findViewById(R.id.create_request_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ContactZendeskActivity.startActivity(MainActivity.this, null);
-            }
-        });
 
         // Start RequestActivity to show existing requests
         findViewById(R.id.show_open_requests_button).setOnClickListener(new View.OnClickListener() {
