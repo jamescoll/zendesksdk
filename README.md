@@ -16,13 +16,13 @@ This repository contains a number of files addressing the challenges of integrat
 
 (In media folder at project root)
     
-Product Concept video - this sets the business context for the test. This was invaluable as provides a meaningful way to assess success and provide a target scope.
-Basic Integration - this goes through how the integration works and provides a useful proof of concept for the provided business case.
-Storyboarding - this provides a view into how the finished product would work given time and scope.
-Metrics for Success - this shows how we can use Zendesk tools to evaluate customer success in the business context. 
-Assessment - this addresses the individual points of the design exercise and evaluates the experience of the integration. 
-Assessment Slide Deck - (see above) 
-Reflections - this is a note on the Zendesk specific experience under the exercise headings
+  - Product Concept video this sets the business context for the test. This was invaluable as provides a meaningful way to assess success and provide a target scope.
+  - Basic Integration this goes through how the integration works and provides a useful proof of concept for the provided business case.
+  - Storyboarding this provides a view into how the finished product would work given time and scope.
+  - Metrics for Success this shows how we can use Zendesk tools to evaluate customer success in the business context. 
+  - Assessment this addresses the individual points of the design exercise and evaluates the experience of the integration. 
+  - Assessment Slide Deck (see above) 
+  - Reflections this is a note on the Zendesk specific experience under the exercise headings
     
 ### Notes
 
