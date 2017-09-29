@@ -22,6 +22,7 @@ Storyboarding - this provides a view into how the finished product would work gi
 Metrics for Success - this shows how we can use Zendesk tools to evaluate customer success in the business context. 
 Assessment - this addresses the individual points of the design exercise and evaluates the experience of the integration. 
 Assessment Slide Deck - (see above) 
+Reflections - this is a note on the Zendesk specific experience under the exercise headings
     
 ### Notes
 
